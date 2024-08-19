@@ -1,17 +1,31 @@
 const pop_div_holder1 = document.getElementById("pop_div_holder1");
 const countdown = document.getElementById("countdown");
-const main_container_challenges = document.querySelector(".main-container-challenges");
+const main_container_challenges = document.querySelector(
+	".main-container-challenges"
+);
 const level_text_p = document.getElementById("level-text-p");
 const rules_div = document.getElementById("rules-div");
 const question_div = document.querySelector(".question-div");
 const answer_div = document.querySelector(".answer-div");
 const country_text_changer = document.getElementById("country_text_changer");
-let true_wrong_divs_holder = document.getElementById("true-wrong-unsure-divs-holder");
+let true_wrong_divs_holder = document.getElementById(
+	"true-wrong-unsure-divs-holder"
+);
 const total_points = document.getElementById("total_points");
 let pop_div_holder = document.getElementById("pop_div_holder");
-let end_correct_answer_counter_value = JSON.parse(localStorage.getItem("end_correct_answer_counter_value"))? JSON.parse(localStorage.getItem("end_correct_answer_counter_value")): 0;
-let end_wrong_answer_counter_value = JSON.parse(localStorage.getItem("end_wrong_answer_counter_value"))? JSON.parse(localStorage.getItem("end_wrong_answer_counter_value")): 0;
-let total = JSON.parse(localStorage.getItem("pointGathered"))? JSON.parse(localStorage.getItem("pointGathered")): 0;
+let end_correct_answer_counter_value = JSON.parse(
+	localStorage.getItem("end_correct_answer_counter_value")
+)
+	? JSON.parse(localStorage.getItem("end_correct_answer_counter_value"))
+	: 0;
+let end_wrong_answer_counter_value = JSON.parse(
+	localStorage.getItem("end_wrong_answer_counter_value")
+)
+	? JSON.parse(localStorage.getItem("end_wrong_answer_counter_value"))
+	: 0;
+let total = JSON.parse(localStorage.getItem("pointGathered"))
+	? JSON.parse(localStorage.getItem("pointGathered"))
+	: 0;
 const buttons = document.querySelectorAll(".answer-button");
 const stopWatch = document.getElementById("timer");
 let flowover = true;
@@ -23,16 +37,16 @@ function challenge_level(id) {
 	level_text_p.innerHTML = `<b>Level: </b>${id}`;
 	if (id === "easy") {
 		quizFunc(id);
-		timer(66,id);
+		timer(66, id);
 	} else if (id === "medium") {
 		quizFunc(id);
-		timer(86,id);
+		timer(86, id);
 	} else if (id === "hard") {
 		quizFunc(id);
-		timer(102,id);
+		timer(102, id);
 	} else if (id === "impossible") {
 		quizFunc(id);
-		timer(132,id);
+		timer(132, id);
 	}
 }
 
@@ -41,7 +55,8 @@ async function quizFunc(level) {
 	if (flowover) {
 		const defaultArray = Array.from({ length: 29 }, (_, i) => i);
 
-		let arrayNumbers = JSON.parse(localStorage.getItem("updatedArray")) || defaultArray;
+		let arrayNumbers =
+			JSON.parse(localStorage.getItem("updatedArray")) || defaultArray;
 		const randomIndex = Math.floor(Math.random() * arrayNumbers.length);
 		const randomNumber = arrayNumbers[randomIndex];
 		arrayNumbers.splice(randomIndex, 1);
@@ -53,12 +68,16 @@ async function quizFunc(level) {
 		country_text_changer.innerHTML = data[randomNumber].country;
 
 		const wrongAnswers = data
-			.filter(item => item.capital !== correctAnswer)
-			.map(item => item.capital)
+			.filter((item) => item.capital !== correctAnswer)
+			.map((item) => item.capital)
 			.slice(0, 6);
-		const wrongOptions = wrongAnswers.sort(() => Math.random() - 0.5).slice(0, 2);
+		shuffleArray(wrongAnswers);
+		const wrongOptions = wrongAnswers.slice(0, 2);
 
-		const answers = [correctAnswer, ...wrongOptions].sort(() => Math.random() - 0.5);
+		const answers = [correctAnswer, ...wrongOptions].sort(
+			() => Math.random() - 0.5
+		);
+		console.log(answers);
 
 		buttons.forEach((button, index) => {
 			button.innerHTML = answers[index];
@@ -67,12 +86,18 @@ async function quizFunc(level) {
 					true_wrong_divs_holder.innerHTML += `<div class="bg-green-500 h-5 w-5 rounded-full m-1 text-center text-sm font-bold">+1</div>`;
 					total++;
 					end_correct_answer_counter_value++;
-					localStorage.setItem("end_correct_answer_counter_value", JSON.stringify(end_correct_answer_counter_value));
+					localStorage.setItem(
+						"end_correct_answer_counter_value",
+						JSON.stringify(end_correct_answer_counter_value)
+					);
 				} else {
 					true_wrong_divs_holder.innerHTML += `<div class="bg-red-500 h-5 w-5 rounded-full m-1 text-center text-sm font-bold">-1</div>`;
 					total--;
 					end_wrong_answer_counter_value++;
-					localStorage.setItem("end_wrong_answer_counter_value", JSON.stringify(end_wrong_answer_counter_value));
+					localStorage.setItem(
+						"end_wrong_answer_counter_value",
+						JSON.stringify(end_wrong_answer_counter_value)
+					);
 				}
 				if (total >= 0) {
 					total_points.style.color = "#48bb78";
@@ -81,16 +106,23 @@ async function quizFunc(level) {
 				}
 				total_points.innerHTML = `<b>${total} Points</b>`;
 				localStorage.setItem("pointGathered", JSON.stringify(total));
-				checkEndCondition(arrayNumbers,level);
+				checkEndCondition(arrayNumbers, level);
 				quizFunc(level);
 			};
 		});
 	}
 }
 /*main functions ends*/
-
+/*shuffle the arrays starts*/
+function shuffleArray(array) {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+}
+/*shuffle the arrays ends */
 /*end popUp starts */
-function checkEndCondition(arrayNumbers = [],level) {
+function checkEndCondition(arrayNumbers = [], level) {
 	if (
 		arrayNumbers.length === 0 ||
 		stopWatch.innerHTML === "<b>Time's up!</b>"
@@ -124,8 +156,6 @@ function checkEndCondition(arrayNumbers = [],level) {
 }
 /*end popUp starts */
 
-
-
 /*animation 3,2,1 starts*/
 const countdownText = document.getElementById("countdown-text");
 const countdownNumbers = ["Ready!", "Steady!", "Go!", "NaN"];
@@ -152,10 +182,8 @@ function updateCountdown() {
 }
 /*animation 3,2,1 ends*/
 
-
-
 /*timer starts */
-function timer(cooo,level) {
+function timer(cooo, level) {
 	let timeLeft = cooo;
 
 	const intervalId = setInterval(() => {
@@ -165,7 +193,7 @@ function timer(cooo,level) {
 		if (timeLeft < 0) {
 			clearInterval(intervalId);
 			stopWatch.innerHTML = `<b class="bebas-neue-regular">Time Left</b>`;
-			checkEndCondition([],level);
+			checkEndCondition([], level);
 		}
 	}, 1000);
 }
@@ -189,7 +217,9 @@ function repeatTheGame() {
 }
 /*repeat the game ends */
 
-
+if (window.location.reload) {
+	localStorage.clear();
+}
 window.onload = () => {
 	localStorage.clear();
 };
